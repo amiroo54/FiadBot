@@ -19,7 +19,6 @@ def help(message):
 def hentai(message):
     print("Hentai")
     GetRandomPostImage(getHentaiSubbredit())
-    FBot.send_photo(message.chat.id, photo=open("Image.jpg", "rb"), reply_to_message_id=message)
-
+    FBot.send_photo(message.chat.id, photo=open("Image.jpg", "rb"), reply_to_message_id=message.id)
 
 FBot.infinity_polling()
