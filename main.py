@@ -18,8 +18,19 @@ def help(message):
 @FBot.message_handler(commands=['hentai'])
 def hentai(message):
     print("Hentai")
-    GetRandomPostImage(getHentaiSubbredit())
-    FBot.send_photo(message.chat.id, photo=open("Image.jpg", "rb"), reply_to_message_id=message)
+    GetRandomPostImage(getHentaiSubbredit('hentai'))
+    FBot.send_photo(message.chat.id, photo=open("Image.jpg", "rb"), reply_to_message_id=message.id)
 
+@FBot.message_handler(commands=['meme'])
+def hentai(message):
+    print("meme")
+    GetRandomPostImage(getHentaiSubbredit('memes'))
+    FBot.send_photo(message.chat.id, photo=open("Image.jpg", "rb"), reply_to_message_id=message.id)
+    
+@FBot.message_handler(commands=['nude'])
+def hentai(message):
+    print("nude")
+    GetRandomPostImage(getHentaiSubbredit('RealGirls'))
+    FBot.send_photo(message.chat.id, photo=open("Image.jpg", "rb"), reply_to_message_id=message.id)
 
 FBot.infinity_polling()
