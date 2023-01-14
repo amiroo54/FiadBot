@@ -11,7 +11,7 @@ def GetEstekhare():
     soup = BeautifulSoup(page.content, "html.parser")
     output += soup.find(id="L_Chapter_Name").text + " "
     output += soup.find(id="L_Chapter_Code").text + ". "
-    output += soup.find(id="L_GoodBad_Name").text + " کلی :"
+    output += soup.find(id="L_GoodBad_Name").text + ".  کلی :"
     output += soup.find(id="L_Result_General").text + " ازدواج :"
     output += soup.find(id="L_Result_Marriage").text + ". معامله :"
     output += soup.find(id="L_Result_Trade").text + ""
