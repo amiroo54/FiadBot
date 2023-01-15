@@ -12,7 +12,16 @@ def getHentaiSubbredit(subreddit):
     return Hsubreddit
 
 def GetRandomPostImage(subreddit):
-    with open("Image.jpg", "wb") as i:
-        i.write(requests.get(subreddit.random().url).content)
+    randomPost = subreddit.random()
+    if ".jpg" in randomPost.url.lower():
+        with open("Image.jpg", "wb") as i:
+            i.write(requests.get(randomPost.url).content)
+        return "jpg"
+    elif ".png" in randomPost.url.lower():
+        with open("Image.png", "wb") as i:
+            i.write(requests.get(randomPost.url).content)
+        return "png"
+    elif "gif" in randomPost.url.lower():
+        return GetRandomPostImage(subreddit)
     
 #GetRandomPostImage(getHentaiSubbredit())

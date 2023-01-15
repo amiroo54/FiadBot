@@ -1,6 +1,7 @@
 import requests
 import random
 from bs4 import BeautifulSoup 
+
 def GetEstekhare():
     output = ""
     pageNumber = random.randint(1, 602/2)
