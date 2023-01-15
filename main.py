@@ -7,6 +7,9 @@ import asyncio
 from estekhare import GetEstekhare
 import wikipedia
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 
 apihelper.proxy = {'http':'http://127.0.0.1:41193', 'https':'http://127.0.0.1:41193'}
