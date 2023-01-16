@@ -19,38 +19,56 @@ FBot = telebot.TeleBot(BOT_TOKEN)
 def help(message):
     print("Help")
     FBot.reply_to(message=message,text="کمک می خوای؟ بیا بخورش.")
+    
 
 @FBot.message_handler(commands=['hentai'])
 def hentai(message):
     print("Hentai")
-    FileTyep = GetRandomPostImage(getHentaiSubbredit('hentai'))
+    FileTyep = GetRandomPostImage(getSubbredit('hentai'))
     if FileTyep == "png":
         FBot.send_photo(message.chat.id, photo=open("Image.png", "rb"), reply_to_message_id=message.id)
     elif FileTyep == "jpg":
         FBot.send_photo(message.chat.id, photo=open("Image.jpg", "rb"), reply_to_message_id=message.id)
-
+    elif FileTyep == "mp4":
+        FBot.send_video(message.chat.id, video=open("Video.mp4", "rb"), reply_to_message_id=message.id)
+        
 @FBot.message_handler(commands=['meme'])
 def meme(message):
     print("meme")
-    FileTyep = GetRandomPostImage(getHentaiSubbredit('memes'))
+    FileTyep = GetRandomPostImage(getSubbredit('memes'))
     if FileTyep == "png":
         FBot.send_photo(message.chat.id, photo=open("Image.png", "rb"), reply_to_message_id=message.id)
     elif FileTyep == "jpg":
         FBot.send_photo(message.chat.id, photo=open("Image.jpg", "rb"), reply_to_message_id=message.id)
+    elif FileTyep == "mp4":
+        FBot.send_video(message.chat.id, video=open("Video.mp4", "rb"), reply_to_message_id=message.id)
     
 @FBot.message_handler(commands=['nude'])
 def nude(message):
     print("nude")
-    FileTyep = GetRandomPostImage(getHentaiSubbredit('RealGirls'))
+    FileTyep = GetRandomPostImage(getSubbredit('RealGirls'))
     if FileTyep == "png":
         FBot.send_photo(message.chat.id, photo=open("Image.png", "rb"), reply_to_message_id=message.id)
     elif FileTyep == "jpg":
         FBot.send_photo(message.chat.id, photo=open("Image.jpg", "rb"), reply_to_message_id=message.id)
+    elif FileTyep == "mp4":
+        FBot.send_video(message.chat.id, video=open("Video.mp4", "rb"), reply_to_message_id=message.id)
 
 @FBot.message_handler(commands=['estekhare'])
 def estekhare(message):
     print("estekhare")
     FBot.reply_to(message=message, text=GetEstekhare())
+
+@FBot.message_handler(commands=['shitpost'])
+def shitpost(message):
+    print("shitpost")
+    FileTyep = GetRandomPostImage(getSubbredit('shitposting'))
+    if FileTyep == "png":
+        FBot.send_photo(message.chat.id, photo=open("Image.png", "rb"), reply_to_message_id=message.id)
+    elif FileTyep == "jpg":
+        FBot.send_photo(message.chat.id, photo=open("Image.jpg", "rb"), reply_to_message_id=message.id)
+    elif FileTyep == "mp4":
+        FBot.send_video(message.chat.id, video=open("Video.mp4", "rb"), reply_to_message_id=message.id)
 
 @FBot.message_handler(commands=["wikipedia"])
 def wikipediaRandom(message):
