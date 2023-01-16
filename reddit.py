@@ -28,7 +28,11 @@ def GetRandomPostImage(subreddit):
         VDownloader = Downloader(max_q=True) 
         VDownloader.max_s = 5 * (1 << 20)
         VDownloader.url = randomPost.url
-        VDownloader.download()
+        try:
+            VDownloader.download()
+        except:
+            GetRandomPostImage(subreddit)
+            return
         os.rename(VDownloader.file_name, "Video.mp4")
         return "mp4"
     elif "gif" in randomPost.url.lower():

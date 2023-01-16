@@ -83,4 +83,5 @@ def wikipediaRandom(message):
         except:
             FBot.reply_to(message, text="یافت نشد. خیخیخیخیخی.")
 
+
 FBot.infinity_polling()
