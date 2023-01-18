@@ -8,11 +8,14 @@ from estekhare import GetEstekhare
 import wikipedia
 import os
 from dotenv import load_dotenv
-
+import googletrans
 load_dotenv()
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 
-apihelper.proxy = {'http':'http://127.0.0.1:41193', 'https':'http://127.0.0.1:41193'}
+proxy = {'http':'http://127.0.0.1:41193', 'https':'http://127.0.0.1:41193'}
+apihelper.proxy = proxy
+
+translator = googletrans.Translator()
 
 FBot = telebot.TeleBot(BOT_TOKEN)
 @FBot.message_handler(commands=['help'])
@@ -83,5 +86,18 @@ def wikipediaRandom(message):
         except:
             FBot.reply_to(message, text="یافت نشد. خیخیخیخیخی.")
 
+@FBot.message_handler(commands=["translate"])
+def Translate(message):
+    print("Translate")
+    if message.reply_to_message == None:
+        empty_text = message.text.replace("/translate", "").replace("@Fiard_bot", "")
+    else:
+        empty_text = message.reply_to_message.text
+        
+    if translator.detect(empty_text).lang == "fa":
+        FBot.reply_to(message, translator.translate(empty_text, dest = 'en').text)
+    else:
+        FBot.reply_to(message, translator.translate(empty_text, dest = 'fa').text)
+    
 
 FBot.infinity_polling()

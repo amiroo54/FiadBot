@@ -3,11 +3,17 @@ import random
 import requests
 from redvid import Downloader
 import os
+from requests import Session
 def getSubbredit(subreddit):
+    proxy = {'http':'http://127.0.0.1:41193', 'https':'http://127.0.0.1:41193'}
+    session = Session()
+    session.proxies['https'] = 'https://127.0.0.1:41193'
     redditAPI = praw.Reddit(
         client_id = "5F20ZWZ1Y991Ds7jJqR1mA",
+        requestor_kwargs = {'session' : session},
         client_secret = "sOqEkRI8qHU1eGvF95L-oobC17VI6Q",
-        user_agent = "amiroo4"
+        user_agent = "amiroo4", 
+        proxy = proxy
     )
 
     Hsubreddit = redditAPI.subreddit(subreddit)
