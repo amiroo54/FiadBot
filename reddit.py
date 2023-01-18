@@ -4,8 +4,8 @@ import requests
 from redvid import Downloader
 import os
 from requests import Session
+proxy = {'http':'http://127.0.0.1:41193', 'https':'http://127.0.0.1:41193'}
 def getSubbredit(subreddit):
-    proxy = {'http':'http://127.0.0.1:41193', 'https':'http://127.0.0.1:41193'}
     session = Session()
     session.proxies['https'] = 'http://127.0.0.1:41193'
     session.proxies['http'] = 'http://127.0.0.1:41193'
@@ -33,6 +33,7 @@ def GetRandomPostImage(subreddit):
         return "png"
     elif "v.redd.it" in randomPost.url.lower():
         VDownloader = Downloader(max_q=True) 
+        VDownloader.proxies = proxy
         VDownloader.max_s = 5 * (1 << 20)
         VDownloader.url = randomPost.url
         try:

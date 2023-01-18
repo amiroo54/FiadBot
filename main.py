@@ -9,6 +9,7 @@ import wikipedia
 import os
 from dotenv import load_dotenv
 import googletrans
+import ChatBot
 load_dotenv()
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 
@@ -19,15 +20,31 @@ translator = googletrans.Translator()
 
 FBot = telebot.TeleBot(BOT_TOKEN)
     
-        
+@FBot.message_handler(func = lambda message : True)
+def Answer(message):
+    answer = ChatBot.GiveRsponse(message.text)
+    if answer == "hentai":
+        nude(message)
+        return
+    if answer == "meme":
+        meme(message)
+        return
+    if answer == "estekhare":
+        estekhare(message)
+        return
+    if answer == "shitpost":
+        shitpost(message)
+        return
+    if answer == "wikipedia":
+        wikipediaRandom(message)
+        return
+    if answer == "translate":
+        Translate(message)
+        return
+    if answer != None:  
+        FBot.reply_to(message, answer)
 
-@FBot.message_handler(commands=['help'])
-def help(message):
-    print("Help")
-    FBot.reply_to(message=message,text="کمک می خوای؟ بیا بخورش.")
-    
 
-@FBot.message_handler(commands=['hentai'])
 def hentai(message):
     print("Hentai")
     FileTyep = GetRandomPostImage(getSubbredit('hentai'))
@@ -38,7 +55,6 @@ def hentai(message):
     elif FileTyep == "mp4":
         FBot.send_video(message.chat.id, video=open("Video.mp4", "rb"), reply_to_message_id=message.id)
         
-@FBot.message_handler(commands=['meme'])
 def meme(message):
     print("meme")
     FileTyep = GetRandomPostImage(getSubbredit('memes'))
@@ -49,7 +65,6 @@ def meme(message):
     elif FileTyep == "mp4":
         FBot.send_video(message.chat.id, video=open("Video.mp4", "rb"), reply_to_message_id=message.id)
     
-@FBot.message_handler(commands=['nude'])
 def nude(message):
     print("nude")
     FileTyep = GetRandomPostImage(getSubbredit('RealGirls'))
@@ -60,12 +75,10 @@ def nude(message):
     elif FileTyep == "mp4":
         FBot.send_video(message.chat.id, video=open("Video.mp4", "rb"), reply_to_message_id=message.id)
 
-@FBot.message_handler(commands=['estekhare'])
 def estekhare(message):
     print("estekhare")
     FBot.reply_to(message=message, text=GetEstekhare())
 
-@FBot.message_handler(commands=['shitpost'])
 def shitpost(message):
     print("shitpost")
     FileTyep = GetRandomPostImage(getSubbredit('shitposting'))
@@ -76,27 +89,26 @@ def shitpost(message):
     elif FileTyep == "mp4":
         FBot.send_video(message.chat.id, video=open("Video.mp4", "rb"), reply_to_message_id=message.id)
 
-@FBot.message_handler(commands=["wikipedia"])
 def wikipediaRandom(message):
     print("wikipedia")
     wikipedia.set_lang("fa")
-    emptyText = message.text.replace("/wikipedia", "").replace("@Fiard_bot", "")
+    emptyText = ""
+    if message.reply_to_message != None:
+        emptyText = message.reply_to_message.text
     if emptyText == "":
         FBot.reply_to(message, text=wikipedia.summary(wikipedia.random()))
     else:
         try:
             FBot.reply_to(message, text=wikipedia.summary(wikipedia.search(emptyText)[0]))
-        except:
+        except: 
             FBot.reply_to(message, text="یافت نشد. خیخیخیخیخی.")
 
-@FBot.message_handler(commands=["translate"])
 def Translate(message):
     print("Translate")
-    if message.reply_to_message == None:
-        empty_text = message.text.replace("/translate", "").replace("@Fiard_bot", "")
-    else:
-        empty_text = message.reply_to_message.text
-        
+    empty_text = message.reply_to_message.text
+    
+    if empty_text == "":
+        return
     if translator.detect(empty_text).lang == "fa":
         FBot.reply_to(message, translator.translate(empty_text, dest = 'en').text)
     else:

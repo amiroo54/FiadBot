@@ -7,17 +7,12 @@ import json
 import pickle
 import hazm
 import os
-words = []
-tags = []
-docs_x = []
-docs_y = []
-data = ''
-#def StartTheModel():
+
 with open("intents.json") as file:
         data = json.load(file)
         
 try:
-    with open("data.pickle", "rb") as f:
+    with open("Chatbot/data.pickle", "rb") as f:
         words, tags, training, output = pickle.load(f)
 except:
     words = []
@@ -26,14 +21,16 @@ except:
     docs_y = []
     for intent in data["intents"]:
         for pattern in intent["patterns"]:
-            wrds = hazm.word_tokenize(pattern)
+            norm = hazm.Normalizer()
+            wrds = norm.normalize(pattern)
+            wrds = hazm.word_tokenize(wrds)
             words.extend(wrds)
             docs_x.append(wrds)
             docs_y.append(intent["tag"])
             
         if intent["tag"] not in tags:
             tags.append(intent["tag"])
-
+            
     words = sorted(list(set(words)))
 
     tags = sorted(tags)
@@ -62,41 +59,44 @@ except:
     training = numpy.array(training)
     output = numpy.array(output)
     
-    with open("data.pickle", "wb") as f:
+    with open("Chatbot/data.pickle", "wb") as f:
         pickle.dump((words, tags, training, output), f)
 
 net = tflearn.input_data(shape=[None,len(training[0])])
-net = tflearn.fully_connected(net, 8)
-net = tflearn.fully_connected(net, 8)
+net = tflearn.fully_connected(net, 10)
+net = tflearn.fully_connected(net, 10)
 net = tflearn.fully_connected(net, len(output[0]), activation = "softmax")
 net = tflearn.regression(net)
 
 model = tflearn.DNN(net)
 
-if os.path.exists("model.tflearn.meta"):
-    model.load("model.tflearn") 
+if os.path.exists("Chatbot/model.tflearn.meta"):
+    model.load("Chatbot/model.tflearn") 
 else:
     model.fit(training, output, n_epoch=1000, batch_size = 8, show_metric = True)
-    model.save("model.tflearn")
+    model.save("Chatbot/model.tflearn")
 #return model
         
     
 def BagOfWords(s):
     bag = [0 for _ in range(len(words))]
-    s_words = hazm.word_tokenize(s)
+    norm = hazm.Normalizer()
+    wrds = norm.normalize(s)
+    s_words = hazm.word_tokenize(wrds)
     for word in s_words:
         for i, w in enumerate(words):
             if w == word:
                 bag[i] = 1 
-            print(bag[i])
-
     return numpy.array(bag)
     
 
 
-def GiveRsponse(s):#, model):
+def GiveRsponse(s):
     result = model.predict([BagOfWords(s)])
     result_index = numpy.argmax(result)
+    print(result[0][result_index])
+    if result[0][result_index] < .7:
+        return None
     tag = tags[result_index]
     for tg in data["intents"]:
         if tg['tag'] == tag:
@@ -104,4 +104,3 @@ def GiveRsponse(s):#, model):
     
     return random.choice(resposes) 
 
-print(GiveRsponse("سلام"))
