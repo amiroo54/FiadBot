@@ -18,6 +18,9 @@ apihelper.proxy = proxy
 translator = googletrans.Translator()
 
 FBot = telebot.TeleBot(BOT_TOKEN)
+    
+        
+
 @FBot.message_handler(commands=['help'])
 def help(message):
     print("Help")

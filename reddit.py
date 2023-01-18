@@ -7,7 +7,8 @@ from requests import Session
 def getSubbredit(subreddit):
     proxy = {'http':'http://127.0.0.1:41193', 'https':'http://127.0.0.1:41193'}
     session = Session()
-    session.proxies['https'] = 'https://127.0.0.1:41193'
+    session.proxies['https'] = 'http://127.0.0.1:41193'
+    session.proxies['http'] = 'http://127.0.0.1:41193'
     redditAPI = praw.Reddit(
         client_id = "5F20ZWZ1Y991Ds7jJqR1mA",
         requestor_kwargs = {'session' : session},
