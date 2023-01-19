@@ -11,7 +11,8 @@ from dotenv import load_dotenv
 import googletrans
 import ChatBot
 from httpcore import SyncHTTPProxy
-
+import pyttsx3
+import asyncio
 load_dotenv()
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 
@@ -22,14 +23,14 @@ apihelper.proxy = proxy
 translatorProxy = {'http': httpcoreProxy, 'https':httpcoreProxy}
 translator = googletrans.Translator(proxies=translatorProxy)  
 
+Engine = pyttsx3.init()
+Engine.setProperty('voice', 'persian-pinglish')
+
 FBot = telebot.TeleBot(BOT_TOKEN)
     
 @FBot.message_handler(func = lambda message : True)
 def Answer(message):
     answer = ChatBot.GiveRsponse(message.text)
-    if answer == "hentai":
-        nude(message)
-        return
     if answer == "meme":
         meme(message)
         return
@@ -45,20 +46,12 @@ def Answer(message):
     if answer == "translate":
         Translate(message)
         return
+    if answer == "TTS":
+        asyncio.run(TTSBot(message))
+        return
     if answer != None:  
         FBot.reply_to(message, answer)
 
-
-def hentai(message):
-    print("Hentai")
-    FileTyep = GetRandomPostImage(getSubbredit('hentai'))
-    if FileTyep == "png":
-        FBot.send_photo(message.chat.id, photo=open("Image.png", "rb"), reply_to_message_id=message.id)
-    elif FileTyep == "jpg":
-        FBot.send_photo(message.chat.id, photo=open("Image.jpg", "rb"), reply_to_message_id=message.id)
-    elif FileTyep == "mp4":
-        FBot.send_video(message.chat.id, video=open("Video.mp4", "rb"), reply_to_message_id=message.id)
-        
 def meme(message):
     print("meme")
     FileTyep = GetRandomPostImage(getSubbredit('memes'))
@@ -69,16 +62,6 @@ def meme(message):
     elif FileTyep == "mp4":
         FBot.send_video(message.chat.id, video=open("Video.mp4", "rb"), reply_to_message_id=message.id)
     
-def nude(message):
-    print("nude")
-    FileTyep = GetRandomPostImage(getSubbredit('RealGirls'))
-    if FileTyep == "png":
-        FBot.send_photo(message.chat.id, photo=open("Image.png", "rb"), reply_to_message_id=message.id)
-    elif FileTyep == "jpg":
-        FBot.send_photo(message.chat.id, photo=open("Image.jpg", "rb"), reply_to_message_id=message.id)
-    elif FileTyep == "mp4":
-        FBot.send_video(message.chat.id, video=open("Video.mp4", "rb"), reply_to_message_id=message.id)
-
 def estekhare(message):
     print("estekhare")
     FBot.reply_to(message=message, text=GetEstekhare())
@@ -118,5 +101,11 @@ def Translate(message):
     else:
         FBot.reply_to(message, translator.translate(empty_text, dest = 'fa').text)
     
+async def TTSBot(message):
+    print("TTS")
+    Engine.save_to_file(message.text, "Voice.mp3")
+    Engine.runAndWait()
+    await FBot.send_audio(message.chat.id, open("Voice.mp3", "rb"), reply_to_message_id=message.id)
+    print("done")
 
 FBot.infinity_polling()

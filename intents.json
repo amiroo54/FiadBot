@@ -3,10 +3,6 @@
      "patterns":["سلام","چطوری","خوبی","چکار میکنی","حالت چطوره","سلاگ","سلامت باشی"],
      "responses":["علیک سلامگ.","علیک سلام شما چطوری؟"],
      "context_set":""},
-     {"tag":"hentai", 
-     "patterns":["هنتای","پورن","نود","سکس","شق","حشر","بالا زده"],
-     "responses":["hentai"],
-     "context_set":""},
      {"tag":"meme", 
      "patterns":["میم","جوک"],
      "responses":["meme"],
@@ -30,5 +26,9 @@
      {"tag":"translate", 
      "patterns":["ترجمه","زبان"],
      "responses":["translate"],
-     "context_set":""}
+     "context_set":""},
+     {"tag":"TTS", 
+     "patterns":["بگو","صدا"],
+     "responses":["TTS"],
+     "context_set":""} 
 ]}
