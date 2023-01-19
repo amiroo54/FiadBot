@@ -10,13 +10,17 @@ import os
 from dotenv import load_dotenv
 import googletrans
 import ChatBot
+from httpcore import SyncHTTPProxy
+
 load_dotenv()
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 
+httpcoreProxy = SyncHTTPProxy((b'http', b'127.0.0.1', 41193, b''))
 proxy = {'http':'http://127.0.0.1:41193', 'https':'http://127.0.0.1:41193'}
 apihelper.proxy = proxy
 
-translator = googletrans.Translator()
+translatorProxy = {'http': httpcoreProxy, 'https':httpcoreProxy}
+translator = googletrans.Translator(proxies=translatorProxy)  
 
 FBot = telebot.TeleBot(BOT_TOKEN)
     
