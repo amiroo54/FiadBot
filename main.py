@@ -27,6 +27,7 @@ Engine = pyttsx3.init()
 Engine.setProperty('voice', 'persian-pinglish')
 
 FBot = telebot.TeleBot(BOT_TOKEN)
+
     
 @FBot.message_handler(func = lambda message : True)
 def Answer(message):
@@ -47,7 +48,10 @@ def Answer(message):
         Translate(message)
         return
     if answer == "TTS":
-        asyncio.run(TTSBot(message))
+        #TTSBot(message)
+        return
+    if answer == "shitranslate":
+        ShitranslateStarter(message)
         return
     if answer != None:  
         FBot.reply_to(message, answer)
@@ -64,7 +68,8 @@ def meme(message):
     
 def estekhare(message):
     print("estekhare")
-    FBot.reply_to(message=message, text=GetEstekhare())
+    GetEstekhare()
+    FBot.send_photo(message.chat.id, photo=open("Image.jpg", "rb"), reply_to_message_id=message.id)
 
 def shitpost(message):
     print("shitpost")
@@ -101,11 +106,33 @@ def Translate(message):
     else:
         FBot.reply_to(message, translator.translate(empty_text, dest = 'fa').text)
     
-async def TTSBot(message):
+def TTSBot(message):
     print("TTS")
     Engine.save_to_file(message.text, "Voice.mp3")
     Engine.runAndWait()
-    await FBot.send_audio(message.chat.id, open("Voice.mp3", "rb"), reply_to_message_id=message.id)
+    FBot.send_audio(message.chat.id, telebot.types.InputFile("Voice.mp3"), reply_to_message_id=message.id)
     print("done")
+
+def ShitranslateStarter(message):
+    print('shitranslateStart')
+    empty_text = message.reply_to_message.text
+    if translator.detect(empty_text).lang == "fa":
+        SentMessage = FBot.reply_to(message, translator.translate(empty_text, dest = 'en').text)
+    else:
+        SentMessage = FBot.reply_to(message, translator.translate(empty_text, dest = 'fa').text)
+    Shitranslate(SentMessage, message)
+    
+
+def Shitranslate(message, Premessage):
+    print("shitranslate")
+    empty_text = message.text 
+    if translator.detect(empty_text).lang == "fa":
+        SentMessage = FBot.reply_to(message, translator.translate(empty_text, dest = 'en').text)
+    else:
+        SentMessage = FBot.reply_to(message, translator.translate(empty_text, dest = 'fa').text)
+    if empty_text != Premessage.reply_to_message.text:
+        Shitranslate(SentMessage, message)
+    else:
+        return
 
 FBot.infinity_polling()
