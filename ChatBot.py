@@ -94,13 +94,15 @@ def BagOfWords(s):
 def GiveRsponse(s):
     result = model.predict([BagOfWords(s)])
     result_index = numpy.argmax(result)
-    print(result[0][result_index])
     if result[0][result_index] < .7:
         return None
     tag = tags[result_index]
     for tg in data["intents"]:
         if tg['tag'] == tag:
-            resposes = tg['responses']   
-    
-    return random.choice(resposes) 
+            resposes = tg['responses']
+            
+    answer = random.choice(resposes) 
+    print(str(result[0][result_index]) +" : "+ answer)
+
+    return answer
 

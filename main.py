@@ -28,10 +28,16 @@ Engine.setProperty('voice', 'persian-pinglish')
 
 FBot = telebot.TeleBot(BOT_TOKEN)
 
+last_estekhare = 0
     
 @FBot.message_handler(func = lambda message : True)
 def Answer(message):
     answer = ChatBot.GiveRsponse(message.text)
+    if message.reply_to_message != None:
+        if message.reply_to_message.id == last_estekhare:
+            SendEstekhare(message)   
+            return
+        return
     if answer == "meme":
         meme(message)
         return
@@ -45,19 +51,49 @@ def Answer(message):
         wikipediaRandom(message)
         return
     if answer == "translate":
+        print("start")
         Translate(message)
-        return
-    if answer == "TTS":
-        #TTSBot(message)
+        print('end')
         return
     if answer == "shitranslate":
         ShitranslateStarter(message)
         return
-    if answer != None:  
+    if answer != None and message.reply_to_message == None: 
         FBot.reply_to(message, answer)
 
+def Translate(message):
+    print(message.text)
+    empty_text = message.reply_to_message.text
+    
+    if empty_text == "":
+        return
+    if translator.detect(empty_text).lang == "fa":
+        FBot.reply_to(message, translator.translate(empty_text, dest = 'en').text)
+    else:
+        FBot.reply_to(message, translator.translate(empty_text, dest = 'fa').text)
+    
+
+def ShitranslateStarter(message):
+    empty_text = message.reply_to_message.text
+    if translator.detect(empty_text).lang == "fa":
+        SentMessage = FBot.reply_to(message, translator.translate(empty_text, dest = 'en').text)
+    else:
+        SentMessage = FBot.reply_to(message, translator.translate(empty_text, dest = 'fa').text)
+    Shitranslate(SentMessage, message)
+    
+
+def Shitranslate(message, Premessage):
+    empty_text = message.text 
+    if translator.detect(empty_text).lang == "fa":
+        SentMessage = FBot.reply_to(message, translator.translate(empty_text, dest = 'en').text)
+    else:
+        SentMessage = FBot.reply_to(message, translator.translate(empty_text, dest = 'fa').text)
+    if empty_text != Premessage.reply_to_message.text:
+        Shitranslate(SentMessage, message)
+    else:
+        return
+
 def meme(message):
-    print("meme")
     FileTyep = GetRandomPostImage(getSubbredit('memes'))
     if FileTyep == "png":
         FBot.send_photo(message.chat.id, photo=open("Image.png", "rb"), reply_to_message_id=message.id)
@@ -67,12 +103,16 @@ def meme(message):
         FBot.send_video(message.chat.id, video=open("Video.mp4", "rb"), reply_to_message_id=message.id)
     
 def estekhare(message):
-    print("estekhare")
-    GetEstekhare()
-    FBot.send_photo(message.chat.id, photo=open("Image.jpg", "rb"), reply_to_message_id=message.id)
+    global last_estekhare
+    sentphoto = FBot.send_photo(message.chat.id, photo=open('estekhareimage.jpg', 'rb'), reply_to_message_id=message.id)
+    last_estekhare = sentphoto.id
+
+def SendEstekhare(message):
+    FBot.reply_to(message, GetEstekhare())
+    global last_estekhare
+    last_estekhare = 0
 
 def shitpost(message):
-    print("shitpost")
     FileTyep = GetRandomPostImage(getSubbredit('shitposting'))
     if FileTyep == "png":
         FBot.send_photo(message.chat.id, photo=open("Image.png", "rb"), reply_to_message_id=message.id)
@@ -82,7 +122,6 @@ def shitpost(message):
         FBot.send_video(message.chat.id, video=open("Video.mp4", "rb"), reply_to_message_id=message.id)
 
 def wikipediaRandom(message):
-    print("wikipedia")
     wikipedia.set_lang("fa")
     emptyText = ""
     if message.reply_to_message != None:
@@ -95,44 +134,6 @@ def wikipediaRandom(message):
         except: 
             FBot.reply_to(message, text="یافت نشد. خیخیخیخیخی.")
 
-def Translate(message):
-    print("Translate")
-    empty_text = message.reply_to_message.text
-    
-    if empty_text == "":
-        return
-    if translator.detect(empty_text).lang == "fa":
-        FBot.reply_to(message, translator.translate(empty_text, dest = 'en').text)
-    else:
-        FBot.reply_to(message, translator.translate(empty_text, dest = 'fa').text)
-    
-def TTSBot(message):
-    print("TTS")
-    Engine.save_to_file(message.text, "Voice.mp3")
-    Engine.runAndWait()
-    FBot.send_audio(message.chat.id, telebot.types.InputFile("Voice.mp3"), reply_to_message_id=message.id)
-    print("done")
 
-def ShitranslateStarter(message):
-    print('shitranslateStart')
-    empty_text = message.reply_to_message.text
-    if translator.detect(empty_text).lang == "fa":
-        SentMessage = FBot.reply_to(message, translator.translate(empty_text, dest = 'en').text)
-    else:
-        SentMessage = FBot.reply_to(message, translator.translate(empty_text, dest = 'fa').text)
-    Shitranslate(SentMessage, message)
-    
-
-def Shitranslate(message, Premessage):
-    print("shitranslate")
-    empty_text = message.text 
-    if translator.detect(empty_text).lang == "fa":
-        SentMessage = FBot.reply_to(message, translator.translate(empty_text, dest = 'en').text)
-    else:
-        SentMessage = FBot.reply_to(message, translator.translate(empty_text, dest = 'fa').text)
-    if empty_text != Premessage.reply_to_message.text:
-        Shitranslate(SentMessage, message)
-    else:
-        return
 
 FBot.infinity_polling()
