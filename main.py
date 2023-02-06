@@ -58,6 +58,8 @@ def Answer(message):
     if answer == "shitranslate":
         ShitranslateStarter(message)
         return
+    if answer == "TTS":
+        return
     if answer != None and message.reply_to_message == None: 
         FBot.reply_to(message, answer)
 
