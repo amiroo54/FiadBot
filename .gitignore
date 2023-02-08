@@ -4,4 +4,4 @@
 *.env
 *.mp4
 *.mp3
-*.code_workspace
+*.code-workspace
