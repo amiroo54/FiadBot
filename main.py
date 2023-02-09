@@ -33,53 +33,10 @@ Engine.setProperty('voice', 'persian-pinglish')
 FBot = telebot.TeleBot(BOT_TOKEN)
 
 #endregion
-SpyList = []
-@FBot.message_handler(commands=["spy"])
-def SpyInit(message):
-    print("Spy")
-    markup = types.InlineKeyboardMarkup()
-    startButton = types.InlineKeyboardButton("شروع")
-    endButton = types.InlineKeyboardButton("پایان")
-    markup.add(startButton, endButton)
-    Sentmessage = FBot.reply_to(message, "برای اضافه شدن به بازی روی این پیام ریپلای بزنید.", reply_markup = markup)
-    spyInstance = game.Spy(1, Sentmessage)
-    SpyList.append(spyInstance)
-
-#@FBot.callback_query_handler(func=lambda call : True)
-@FBot.message_handler(commands=["startspy"])
-def SpyStart(message):
-    print(message.id)
-    for instance in SpyList:
-        if message.reply_to_message.id == instance.id.id:
-            instance.Start()
-            Spy = instance
-            for player in Spy.PlayerList:
-                print(player.username)
-                if Spy.spy == player:
-                    FBot.send_message(player.id, "شما جاسوس هستید.")
-                else:
-                    FBot.send_message(player.id, Spy.word)
-"""         if message.data == str(instance.id.id)+"End":
-            SpyList.remove(instance)
-            FBot.delete_message(instance.id.chat, instance.id.id)"""
 
 #region Main Message Handler
 @FBot.message_handler(func = lambda message : True)
 def Answer(message):
-    #messagereplycheck
-    if message.reply_to_message != None:
-        #spy
-        for Instance in SpyList:
-            print(Instance.id.id)
-            print(message.reply_to_message.id)
-            if message.reply_to_message.id == Instance.id.id and Instance.started == False:
-                Instance.PlayerList.append(message.from_user)
-                print(Instance.PlayerList)
-        #estekhare
-        if message.reply_to_message.id == last_estekhare:
-            SendEstekhare(message)   
-            return
-        return
     #chatbotchecks
     answer = ChatBot.GiveRsponse(message.text)
     if answer == "meme":
@@ -95,14 +52,29 @@ def Answer(message):
         wikipediaRandom(message)
         return
     if answer == "translate":
-        print("start")
         Translate(message)
-        print('end')
         return
     if answer == "shitranslate":
         ShitranslateStarter(message)
         return
     if answer == "TTS":
+        return
+    if answer == "spy":
+        SpyInit(message)
+        return
+    if answer == "spystart":
+        SpyStart(message)
+        return
+    #messagereplycheck
+    if message.reply_to_message != None:
+        #spy
+        for Instance in game.SpyList:    
+            if message.reply_to_message.id == Instance.id.id and Instance.started == False and Instance.PlayerListId.count(message.from_user.id) < 1:
+                Instance.AddPlayer(message.from_user)
+        #estekhare
+        if message.reply_to_message.id == last_estekhare:
+            SendEstekhare(message)   
+            return
         return
     if answer != None and message.reply_to_message == None: 
         FBot.reply_to(message, answer)
@@ -182,6 +154,26 @@ def wikipediaRandom(message):
             FBot.reply_to(message, text=wikipedia.summary(wikipedia.search(emptyText)[0]))
         except: 
             FBot.reply_to(message, text="یافت نشد. خیخیخیخیخی.")
+            
+def SpyInit(message):
+    markup = types.InlineKeyboardMarkup()
+    startButton = types.InlineKeyboardButton("شروع", callback_data="Start")
+    endButton = types.InlineKeyboardButton("پایان", callback_data="End")
+    InfoButton = types.InlineKeyboardButton("قوانین", callback_data="Info")
+    markup.add(startButton, endButton).add(InfoButton)
+    Sentmessage = FBot.reply_to(message, "برای اضافه شدن به بازی روی این پیام ریپلای بزنید.", reply_markup = markup)
+    game.Spy(1, Sentmessage)
+    
+def SpyStart(message):
+    for instance in game.SpyList:
+        if message.reply_to_message.id == instance.id.id:
+            instance.Start()
+            Spy = instance
+            for player in Spy.PlayerList:
+                if Spy.spy == player:
+                    FBot.send_message(player.id, "شما جاسوس هستید.")
+                else:
+                    FBot.send_message(player.id, Spy.word)
 #endregion
 
 
