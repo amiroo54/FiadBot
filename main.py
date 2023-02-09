@@ -42,7 +42,7 @@ def SpyInit(message):
     endButton = types.InlineKeyboardButton("پایان")
     markup.add(startButton, endButton)
     Sentmessage = FBot.reply_to(message, "برای اضافه شدن به بازی روی این پیام ریپلای بزنید.", reply_markup = markup)
-    spyInstance = game.Spy(1, message)
+    spyInstance = game.Spy(1, Sentmessage)
     SpyList.append(spyInstance)
 
 #@FBot.callback_query_handler(func=lambda call : True)
