@@ -1,9 +1,9 @@
+#region imports
 import telebot
 from telebot import apihelper
 from telebot.async_telebot import AsyncTeleBot
 import praw
 from reddit import *
-import asyncio
 from estekhare import GetEstekhare
 import wikipedia
 import os
@@ -13,6 +13,10 @@ import ChatBot
 from httpcore import SyncHTTPProxy
 import pyttsx3
 import asyncio
+import game
+from telebot import types
+#endregion
+#region Setup
 load_dotenv()
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 
@@ -28,16 +32,56 @@ Engine.setProperty('voice', 'persian-pinglish')
 
 FBot = telebot.TeleBot(BOT_TOKEN)
 
-last_estekhare = 0
-    
+#endregion
+SpyList = []
+@FBot.message_handler(commands=["spy"])
+def SpyInit(message):
+    print("Spy")
+    markup = types.InlineKeyboardMarkup()
+    startButton = types.InlineKeyboardButton("شروع")
+    endButton = types.InlineKeyboardButton("پایان")
+    markup.add(startButton, endButton)
+    Sentmessage = FBot.reply_to(message, "برای اضافه شدن به بازی روی این پیام ریپلای بزنید.", reply_markup = markup)
+    spyInstance = game.Spy(1, message)
+    SpyList.append(spyInstance)
+
+#@FBot.callback_query_handler(func=lambda call : True)
+@FBot.message_handler(commands=["startspy"])
+def SpyStart(message):
+    print(message.id)
+    for instance in SpyList:
+        if message.reply_to_message.id == instance.id.id:
+            instance.Start()
+            Spy = instance
+            for player in Spy.PlayerList:
+                print(player.username)
+                if Spy.spy == player:
+                    FBot.send_message(player.id, "شما جاسوس هستید.")
+                else:
+                    FBot.send_message(player.id, Spy.word)
+"""         if message.data == str(instance.id.id)+"End":
+            SpyList.remove(instance)
+            FBot.delete_message(instance.id.chat, instance.id.id)"""
+
+#region Main Message Handler
 @FBot.message_handler(func = lambda message : True)
 def Answer(message):
-    answer = ChatBot.GiveRsponse(message.text)
+    #messagereplycheck
     if message.reply_to_message != None:
+        #spy
+        for Instance in SpyList:
+            print(Instance.id.id)
+            print(message.reply_to_message.id)
+            if message.reply_to_message.id == Instance.id.id and Instance.started == False:
+                Instance.PlayerList.append(message.from_user)
+                print(Instance.PlayerList)
+        #estekhare
         if message.reply_to_message.id == last_estekhare:
             SendEstekhare(message)   
             return
         return
+    #chatbotchecks
+    answer = ChatBot.GiveRsponse(message.text)
     if answer == "meme":
         meme(message)
         return
@@ -62,7 +106,9 @@ def Answer(message):
         return
     if answer != None and message.reply_to_message == None: 
         FBot.reply_to(message, answer)
+#endregion
 
+#region Functions
 def Translate(message):
     print(message.text)
     empty_text = message.reply_to_message.text
@@ -103,7 +149,8 @@ def meme(message):
         FBot.send_photo(message.chat.id, photo=open("Image.jpg", "rb"), reply_to_message_id=message.id)
     elif FileTyep == "mp4":
         FBot.send_video(message.chat.id, video=open("Video.mp4", "rb"), reply_to_message_id=message.id)
-    
+
+last_estekhare = 0
 def estekhare(message):
     global last_estekhare
     sentphoto = FBot.send_photo(message.chat.id, photo=open('estekhareimage.jpg', 'rb'), reply_to_message_id=message.id)
@@ -135,7 +182,7 @@ def wikipediaRandom(message):
             FBot.reply_to(message, text=wikipedia.summary(wikipedia.search(emptyText)[0]))
         except: 
             FBot.reply_to(message, text="یافت نشد. خیخیخیخیخی.")
-
+#endregion
 
 
 FBot.infinity_polling()
