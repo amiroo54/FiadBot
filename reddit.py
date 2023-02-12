@@ -4,11 +4,12 @@ import requests
 from redvid import Downloader
 import os
 from requests import Session
-proxy = {'http':'http://127.0.0.1:41193', 'https':'http://127.0.0.1:41193'}
+import main
+proxy = main.proxy
 def getSubbredit(subreddit):
     session = Session()
-    session.proxies['https'] = 'http://127.0.0.1:41193'
-    session.proxies['http'] = 'http://127.0.0.1:41193'
+    session.proxies['https'] = f'http://{main.HTTPS_PROXY}'
+    session.proxies['http'] = f'http://{main.HTTP_PROXY}'
     redditAPI = praw.Reddit(
         client_id = "5F20ZWZ1Y991Ds7jJqR1mA",
         requestor_kwargs = {'session' : session},
@@ -46,4 +47,3 @@ def GetRandomPostImage(subreddit):
     elif "gif" in randomPost.url.lower():
         return GetRandomPostImage(subreddit)
     
-#GetRandomPostImage(getHentaiSubbredit())
