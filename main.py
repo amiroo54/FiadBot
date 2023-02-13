@@ -28,8 +28,8 @@ proxy = {'http':f'http://{HTTP_PROXY}', 'https':f'http://{HTTPS_PROXY}'}
 if USE_PROXY:
     apihelper.proxy = proxy
 
-translatorProxy = {'http': httpcoreProxy, 'https':httpcoreProxy}
-translator = googletrans.Translator()  
+translatorProxy = {'http': httpcoreProxy, 'https': httpcoreProxy}
+translator = googletrans.Translator(proxies=translatorProxy)  
 
 Engine = pyttsx3.init()
 Engine.setProperty('voice', 'persian-pinglish')
