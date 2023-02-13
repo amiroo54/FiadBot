@@ -19,13 +19,17 @@ from telebot import types
 #region Setup
 load_dotenv()
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
+USE_PROXY = os.environ.get("USE_PROXY")
+HTTP_PROXY = os.environ.get("PROXY_HTTP")
+HTTPS_PROXY = os.environ.get("PROXY_HTTPS")
 
 httpcoreProxy = SyncHTTPProxy((b'http', b'127.0.0.1', 41193, b''))
-proxy = {'http':'http://127.0.0.1:41193', 'https':'http://127.0.0.1:41193'}
-apihelper.proxy = proxy
+proxy = {'http':f'http://{HTTP_PROXY}', 'https':f'http://{HTTPS_PROXY}'}
+if USE_PROXY:
+    apihelper.proxy = proxy
 
 translatorProxy = {'http': httpcoreProxy, 'https':httpcoreProxy}
-translator = googletrans.Translator(proxies=translatorProxy)  
+translator = googletrans.Translator()  
 
 Engine = pyttsx3.init()
 Engine.setProperty('voice', 'persian-pinglish')
