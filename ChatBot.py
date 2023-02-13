@@ -63,9 +63,9 @@ except:
         pickle.dump((words, tags, training, output), f)
 
 net = tflearn.input_data(shape=[None,len(training[0])])
-net = tflearn.fully_connected(net, 12)
-net = tflearn.fully_connected(net, 12)
-net = tflearn.fully_connected(net, 12)
+net = tflearn.fully_connected(net, 32)
+net = tflearn.fully_connected(net, 32)
+net = tflearn.fully_connected(net, 32)
 net = tflearn.fully_connected(net, len(output[0]), activation = "softmax")
 net = tflearn.regression(net)
 
@@ -74,7 +74,7 @@ model = tflearn.DNN(net)
 if os.path.exists("Chatbot/model.tflearn.meta"):
     model.load("Chatbot/model.tflearn") 
 else:
-    model.fit(training, output, n_epoch=1000, batch_size = 8, show_metric = True)
+    model.fit(training, output, n_epoch=5000, batch_size = 8, show_metric = True)
     model.save("Chatbot/model.tflearn")
 #return model
         
@@ -95,15 +95,14 @@ def BagOfWords(s):
 def GiveRsponse(s):
     result = model.predict([BagOfWords(s)])
     result_index = numpy.argmax(result)
-    if result[0][result_index] < .7:
+    if result[0][result_index] < .8:
         return None
     tag = tags[result_index]
     for tg in data["intents"]:
         if tg['tag'] == tag:
             resposes = tg['responses']
-            
-    answer = random.choice(resposes) 
-    print(str(result[0][result_index]) +" : "+ answer)
+            answer = random.choice(resposes) 
+    print(str(result[0][result_index]))
 
     return answer
 

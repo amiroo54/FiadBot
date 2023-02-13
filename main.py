@@ -39,6 +39,8 @@ FBot = telebot.TeleBot(BOT_TOKEN)
 def Answer(message):
     #chatbotchecks
     answer = ChatBot.GiveRsponse(message.text)
+    if message.from_user.username == "NowThatRickyIsDead":
+        FBot.ban_chat_member(message.chat.id, message.from_user.id)
     if answer == "meme":
         meme(message)
         return
@@ -51,12 +53,6 @@ def Answer(message):
     if answer == "wikipedia":
         wikipediaRandom(message)
         return
-    if answer == "translate":
-        Translate(message)
-        return
-    if answer == "shitranslate":
-        ShitranslateStarter(message)
-        return
     if answer == "TTS":
         return
     if answer == "spy":
@@ -67,6 +63,12 @@ def Answer(message):
         return
     #messagereplycheck
     if message.reply_to_message != None:
+        if answer == "translate":
+            Translate(message)
+            return
+        if answer == "shitranslate":
+            ShitranslateStarter(message)
+            return
         #spy
         for Instance in game.SpyList:    
             if message.reply_to_message.id == Instance.id.id and Instance.started == False and Instance.PlayerListId.count(message.from_user.id) < 1:
@@ -170,10 +172,14 @@ def SpyStart(message):
             instance.Start()
             Spy = instance
             for player in Spy.PlayerList:
-                if Spy.spy == player:
-                    FBot.send_message(player.id, "شما جاسوس هستید.")
-                else:
-                    FBot.send_message(player.id, Spy.word)
+                try:
+                    if Spy.spy == player:
+                        FBot.send_message(player.id, "شما جاسوس هستید.")
+                    else:
+                        FBot.send_message(player.id, Spy.word)
+                except apihelper.ApiTelegramException as e:
+                    if e.description == "Forbidden: bot can't initiate conversation with a user":
+                        FBot.reply_to(message, f"the player {player.username} has not started the bot, the game will start regardless.")
 #endregion
 
 
