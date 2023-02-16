@@ -24,10 +24,7 @@ class Spy:
         self.PlayerListId.append(player.id)
     
     def Start(self):
-        self.spy = random.choice(self.PlayerList)
-        for player in self.PlayerList:
-            print(player.username)
-        print("the spy is : " + self.spy.username)
+        self.spy = random.choice(self.PlayerList)            
         self.started = True
         
     def End(self):

@@ -34,6 +34,9 @@ FBot = telebot.TeleBot(BOT_TOKEN)
 
 #endregion
 
+@FBot.message_handler(commands=["start"])
+def Start(message):
+    FBot.send_message(message.chat.id, "با موفقیت استارت شد.")
 #region Main Message Handler
 @FBot.message_handler(func = lambda message : True)
 def Answer(message):
@@ -56,7 +59,8 @@ def Answer(message):
     if answer == "TTS":
         return
     if answer == "spy":
-        SpyInit(message)
+        if not message.from_user == FBot.get_me():
+            SpyInit(message)
         return
     if answer == "spystart":
         SpyStart(message)
@@ -168,7 +172,7 @@ def SpyInit(message):
     
 def SpyStart(message):
     for instance in game.SpyList:
-        if message.reply_to_message.id == instance.id.id:
+        if message.reply_to_message.id == instance.id.id and message.from_user.id == instance.id.from_user.id:
             instance.Start()
             Spy = instance
             for player in Spy.PlayerList:
