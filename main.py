@@ -11,7 +11,6 @@ from dotenv import load_dotenv
 import googletrans
 import ChatBot
 from httpcore import SyncHTTPProxy
-import pyttsx3
 import asyncio
 import game
 from telebot import types
@@ -27,8 +26,6 @@ apihelper.proxy = proxy
 translatorProxy = {'http': httpcoreProxy, 'https':httpcoreProxy}
 translator = googletrans.Translator(proxies=translatorProxy)  
 
-Engine = pyttsx3.init()
-Engine.setProperty('voice', 'persian-pinglish')
 
 FBot = telebot.TeleBot(BOT_TOKEN)
 
@@ -168,11 +165,11 @@ def SpyInit(message):
     InfoButton = types.InlineKeyboardButton("قوانین", callback_data="Info")
     markup.add(startButton, endButton).add(InfoButton)
     Sentmessage = FBot.reply_to(message, "برای اضافه شدن به بازی روی این پیام ریپلای بزنید.", reply_markup = markup)
-    game.Spy(1, Sentmessage)
+    game.Spy(2, Sentmessage)
     
 def SpyStart(message):
     for instance in game.SpyList:
-        if message.reply_to_message.id == instance.id.id and message.from_user.id == instance.id.from_user.id:
+        if message.reply_to_message.id == instance.id.id and message.from_user.id == instance.id.reply_to_message.from_user.id:
             instance.Start()
             Spy = instance
             for player in Spy.PlayerList:

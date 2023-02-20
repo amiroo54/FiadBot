@@ -17,7 +17,8 @@ class Spy:
             self.word = wikipedia.random()
         if Difficulty == 2:
             with open("SpyWord.json") as file:  
-                self.word = random.choice(json.load(file)["words"])
+                wordList = json.load(file)
+                self.word = random.choice(wordList["words"])
     
     def AddPlayer(self,player):
         self.PlayerList.append(player)
@@ -29,4 +30,5 @@ class Spy:
         
     def End(self):
         SpyList.remove(self)
-        
+
+
