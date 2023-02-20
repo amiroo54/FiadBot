@@ -1,7 +1,6 @@
 #region imports
 import telebot
 from telebot import apihelper
-from telebot.async_telebot import AsyncTeleBot
 import praw
 from reddit import *
 from estekhare import GetEstekhare
@@ -11,7 +10,6 @@ from dotenv import load_dotenv
 import googletrans
 import ChatBot
 from httpcore import SyncHTTPProxy
-import asyncio
 import game
 from telebot import types
 #endregion
@@ -19,8 +17,8 @@ from telebot import types
 load_dotenv()
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 
-httpcoreProxy = SyncHTTPProxy((b'http', b'127.0.0.1', 41193, b''))
-proxy = {'http':'http://127.0.0.1:41193', 'https':'http://127.0.0.1:41193'}
+httpcoreProxy = SyncHTTPProxy((b'http', b'127.0.0.1', 45657, b''))
+proxy = {'http':'http://127.0.0.1:45657', 'https':'http://127.0.0.1:45657'}
 apihelper.proxy = proxy
 
 translatorProxy = {'http': httpcoreProxy, 'https':httpcoreProxy}
@@ -53,8 +51,6 @@ def Answer(message):
     if answer == "wikipedia":
         wikipediaRandom(message)
         return
-    if answer == "TTS":
-        return
     if answer == "spy":
         if not message.from_user == FBot.get_me():
             SpyInit(message)
@@ -62,14 +58,14 @@ def Answer(message):
     if answer == "spystart":
         SpyStart(message)
         return
+    if answer == "translate":
+        Translate(message)
+        return
+    if answer == "shitranslate":
+        ShitranslateStarter(message)
+        return
     #messagereplycheck
     if message.reply_to_message != None:
-        if answer == "translate":
-            Translate(message)
-            return
-        if answer == "shitranslate":
-            ShitranslateStarter(message)
-            return
         #spy
         for Instance in game.SpyList:    
             if message.reply_to_message.id == Instance.id.id and Instance.started == False and Instance.PlayerListId.count(message.from_user.id) < 1:
@@ -85,7 +81,6 @@ def Answer(message):
 
 #region Functions
 def Translate(message):
-    print(message.text)
     empty_text = message.reply_to_message.text
     
     if empty_text == "":

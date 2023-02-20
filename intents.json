@@ -34,9 +34,5 @@
      {"tag":"spystart", 
      "patterns":["شروع"],
      "responses":["spystart"],
-     "context_set":""},
-     {"tag":"TTS", 
-     "patterns":["بگو","صدا"],
-     "responses":["TTS"],
-     "context_set":""} 
+     "context_set":""}
 ]}

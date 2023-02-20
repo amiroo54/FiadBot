@@ -4,11 +4,11 @@ import requests
 from redvid import Downloader
 import os
 from requests import Session
-proxy = {'http':'http://127.0.0.1:41193', 'https':'http://127.0.0.1:41193'}
+proxy = {'http':'http://127.0.0.1:45657', 'https':'http://127.0.0.1:45657'}
 def getSubbredit(subreddit):
     session = Session()
-    session.proxies['https'] = 'http://127.0.0.1:41193'
-    session.proxies['http'] = 'http://127.0.0.1:41193'
+    session.proxies['https'] = 'http://127.0.0.1:45657'
+    session.proxies['http'] = 'http://127.0.0.1:45657'
     redditAPI = praw.Reddit(
         client_id = "5F20ZWZ1Y991Ds7jJqR1mA",
         requestor_kwargs = {'session' : session},

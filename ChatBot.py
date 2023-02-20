@@ -63,9 +63,9 @@ except:
         pickle.dump((words, tags, training, output), f)
 
 net = tflearn.input_data(shape=[None,len(training[0])])
+net = tflearn.fully_connected(net, 16)
 net = tflearn.fully_connected(net, 32)
-net = tflearn.fully_connected(net, 32)
-net = tflearn.fully_connected(net, 32)
+net = tflearn.fully_connected(net, 16)
 net = tflearn.fully_connected(net, len(output[0]), activation = "softmax")
 net = tflearn.regression(net)
 
@@ -74,7 +74,7 @@ model = tflearn.DNN(net)
 if os.path.exists("Chatbot/model.tflearn.meta"):
     model.load("Chatbot/model.tflearn") 
 else:
-    model.fit(training, output, n_epoch=5000, batch_size = 8, show_metric = True)
+    model.fit(training, output, n_epoch=3000, batch_size = 8, show_metric = True)
     model.save("Chatbot/model.tflearn")
 #return model
         
