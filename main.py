@@ -10,8 +10,9 @@ from dotenv import load_dotenv
 import googletrans
 import ChatBot
 from httpcore import SyncHTTPProxy
-import game
+import BotTypes
 from telebot import types
+import openai
 #endregion
 #region Setup
 load_dotenv()
@@ -27,11 +28,26 @@ translator = googletrans.Translator(proxies=translatorProxy)
 
 FBot = telebot.TeleBot(BOT_TOKEN)
 
+openai.api_key = os.environ.get("OPENAI_TOKEN")
 #endregion
 
 @FBot.message_handler(commands=["start"])
 def Start(message):
     FBot.send_message(message.chat.id, "با موفقیت استارت شد.")
+
+@FBot.message_handler(chat_types=["privte"])
+def Chatgpt(message):
+    ModelEngine = "text-davinci-003"
+    promp = message.text
+    GPTanswer = openai.Completion.create(
+        engine=ModelEngine,
+        prompt = promp, 
+        max_token=1024, 
+        n=1, 
+        stop = None,
+        temperatre = 0.5
+    )
+    FBot.reply_to(message, GPTanswer.choices[0].text)
 #region Main Message Handler
 @FBot.message_handler(func = lambda message : True)
 def Answer(message):
@@ -67,7 +83,7 @@ def Answer(message):
     #messagereplycheck
     if message.reply_to_message != None:
         #spy
-        for Instance in game.SpyList:    
+        for Instance in BotTypes.Spy.SpyList:    
             if message.reply_to_message.id == Instance.id.id and Instance.started == False and Instance.PlayerListId.count(message.from_user.id) < 1:
                 Instance.AddPlayer(message.from_user)
         #estekhare
@@ -160,10 +176,10 @@ def SpyInit(message):
     InfoButton = types.InlineKeyboardButton("قوانین", callback_data="Info")
     markup.add(startButton, endButton).add(InfoButton)
     Sentmessage = FBot.reply_to(message, "برای اضافه شدن به بازی روی این پیام ریپلای بزنید.", reply_markup = markup)
-    game.Spy(2, Sentmessage)
+    BotTypes.Spy(2, Sentmessage)
     
 def SpyStart(message):
-    for instance in game.SpyList:
+    for instance in BotTypes.Spy.SpyList:
         if message.reply_to_message.id == instance.id.id and message.from_user.id == instance.id.reply_to_message.from_user.id:
             instance.Start()
             Spy = instance

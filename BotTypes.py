@@ -2,15 +2,14 @@ import random
 import wikipedia
 import json
 
-SpyList = []
 class Spy:
-    
+    SpyList = []
     def __init__(self, Difficulty, id):
         self.started = False
         self.PlayerList = []
         self.PlayerListId = []
         self.id = id
-        SpyList.append(self)
+        Spy.SpyList.append(self)
         
         if Difficulty == 1:
             wikipedia.set_lang("fa")
@@ -29,6 +28,5 @@ class Spy:
         self.started = True
         
     def End(self):
-        SpyList.remove(self)
-
+        Spy.SpyList.remove(self)
 
