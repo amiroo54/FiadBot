@@ -18,8 +18,8 @@ import openai
 load_dotenv()
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 
-httpcoreProxy = SyncHTTPProxy((b'http', b'127.0.0.1', 45657, b''))
-proxy = {'http':'http://127.0.0.1:45657', 'https':'http://127.0.0.1:45657'}
+httpcoreProxy = SyncHTTPProxy((b'http', b'127.0.0.1', 34229, b''))
+proxy = {'http':'http://127.0.0.1:34229', 'https':'http://127.0.0.1:34229'}
 apihelper.proxy = proxy
 
 translatorProxy = {'http': httpcoreProxy, 'https':httpcoreProxy}
@@ -128,13 +128,8 @@ def Shitranslate(message, Premessage):
         return
 
 def meme(message):
-    FileTyep = GetRandomPostImage(getSubbredit('memes'))
-    if FileTyep == "png":
-        FBot.send_photo(message.chat.id, photo=open("Image.png", "rb"), reply_to_message_id=message.id)
-    elif FileTyep == "jpg":
-        FBot.send_photo(message.chat.id, photo=open("Image.jpg", "rb"), reply_to_message_id=message.id)
-    elif FileTyep == "mp4":
-        FBot.send_video(message.chat.id, video=open("Video.mp4", "rb"), reply_to_message_id=message.id)
+    File = GetPost(getSubbredit('memes'))
+    FBot.send_photo(message.chat.id, File, reply_to_message_id=message.id)
 
 last_estekhare = 0
 def estekhare(message):
@@ -148,13 +143,8 @@ def SendEstekhare(message):
     last_estekhare = 0
 
 def shitpost(message):
-    FileTyep = GetRandomPostImage(getSubbredit('shitposting'))
-    if FileTyep == "png":
-        FBot.send_photo(message.chat.id, photo=open("Image.png", "rb"), reply_to_message_id=message.id)
-    elif FileTyep == "jpg":
-        FBot.send_photo(message.chat.id, photo=open("Image.jpg", "rb"), reply_to_message_id=message.id)
-    elif FileTyep == "mp4":
-        FBot.send_video(message.chat.id, video=open("Video.mp4", "rb"), reply_to_message_id=message.id)
+    File = GetPost(getSubbredit('shitposting'))
+    FBot.send_photo(message.chat.id, File, reply_to_message_id=message.id)
 
 def wikipediaRandom(message):
     wikipedia.set_lang("fa")

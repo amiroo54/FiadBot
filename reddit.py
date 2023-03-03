@@ -4,11 +4,11 @@ import requests
 from redvid import Downloader
 import os
 from requests import Session
-proxy = {'http':'http://127.0.0.1:45657', 'https':'http://127.0.0.1:45657'}
+proxy = {'http':'http://127.0.0.1:34229', 'https':'http://127.0.0.1:34229'}
 def getSubbredit(subreddit):
     session = Session()
-    session.proxies['https'] = 'http://127.0.0.1:45657'
-    session.proxies['http'] = 'http://127.0.0.1:45657'
+    session.proxies['https'] = 'http://127.0.0.1:34229'
+    session.proxies['http'] = 'http://127.0.0.1:34229'
     redditAPI = praw.Reddit(
         client_id = "5F20ZWZ1Y991Ds7jJqR1mA",
         requestor_kwargs = {'session' : session},
@@ -20,30 +20,10 @@ def getSubbredit(subreddit):
     Hsubreddit = redditAPI.subreddit(subreddit)
     return Hsubreddit
 
-def GetRandomPostImage(subreddit):
+def GetPost(subreddit):
     randomPost = subreddit.random()
-    print(randomPost.url)
-    if ".jpg" in randomPost.url.lower():
-        with open("Image.jpg", "wb") as i:
-            i.write(requests.get(randomPost.url).content)
-        return "jpg"
-    elif ".png" in randomPost.url.lower():
-        with open("Image.png", "wb") as i:
-            i.write(requests.get(randomPost.url).content)
-        return "png"
-    elif "v.redd.it" in randomPost.url.lower():
-        VDownloader = Downloader(max_q=True) 
-        VDownloader.proxies = proxy
-        VDownloader.max_s = 5 * (1 << 20)
-        VDownloader.url = randomPost.url
-        try:
-            VDownloader.download()
-        except:
-            GetRandomPostImage(subreddit)
-            return
-        os.rename(VDownloader.file_name, "Video.mp4")
-        return "mp4"
-    elif "gif" in randomPost.url.lower():
-        return GetRandomPostImage(subreddit)
+    if "v.redd.it" in randomPost.url:
+        return GetPost(subreddit)
+    return requests.get(randomPost.url).content
     
 #GetRandomPostImage(getHentaiSubbredit())

@@ -1,10 +1,7 @@
-*.png
-*.jpg
 *.pyc
 *.env
 *.mp4
 *.mp3
 *.code-workspace
-!estekhareimage.jpg
 redvid_temp
 __pycache__
