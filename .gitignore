@@ -1,7 +1,5 @@
 *.pyc
 *.env
-*.mp4
-*.mp3
 *.code-workspace
 redvid_temp
 __pycache__
