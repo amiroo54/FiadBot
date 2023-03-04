@@ -35,17 +35,17 @@ openai.api_key = os.environ.get("OPENAI_TOKEN")
 def Start(message):
     FBot.send_message(message.chat.id, "با موفقیت استارت شد.")
 
-@FBot.message_handler(chat_types=["privte"])
+@FBot.message_handler(chat_types=["private"])
 def Chatgpt(message):
     ModelEngine = "text-davinci-003"
     promp = message.text
     GPTanswer = openai.Completion.create(
         engine=ModelEngine,
         prompt = promp, 
-        max_token=1024, 
+        max_tokens=1024, 
         n=1, 
         stop = None,
-        temperatre = 0.5
+        temperature = 0.5
     )
     FBot.reply_to(message, GPTanswer.choices[0].text)
 #region Main Message Handler
@@ -59,7 +59,7 @@ def Answer(message):
         meme(message)
         return
     if answer == "estekhare":
-        estekhare(message)
+        StartEstekhare(message)
         return
     if answer == "shitpost":
         shitpost(message)
@@ -87,10 +87,12 @@ def Answer(message):
             if message.reply_to_message.id == Instance.id.id and Instance.started == False and Instance.PlayerListId.count(message.from_user.id) < 1:
                 Instance.AddPlayer(message.from_user)
         #estekhare
-        if message.reply_to_message.id == last_estekhare:
-            SendEstekhare(message)   
-            return
-        return
+        for estekhare in BotTypes.estekhare.estekhareList:
+            if message.reply_to_message.id == estekhare.photo.id and message.from_user.id == estekhare.ID.from_user.id:
+                print("started")
+                SendEstekhare(message, estekhare)
+                
+        
     if answer != None and message.reply_to_message == None: 
         FBot.reply_to(message, answer)
 #endregion
@@ -131,16 +133,14 @@ def meme(message):
     File = GetPost(getSubbredit('memes'))
     FBot.send_photo(message.chat.id, File, reply_to_message_id=message.id)
 
-last_estekhare = 0
-def estekhare(message):
-    global last_estekhare
-    sentphoto = FBot.send_photo(message.chat.id, photo=open('estekhareimage.jpg', 'rb'), reply_to_message_id=message.id)
-    last_estekhare = sentphoto.id
+def StartEstekhare(message):
+    BotTypes.estekhare(message, FBot.send_photo(message.chat.id, photo=open('estekhareimage.jpg', 'rb'), reply_to_message_id=message.id))
+    
 
-def SendEstekhare(message):
+def SendEstekhare(message, es):
     FBot.reply_to(message, GetEstekhare())
-    global last_estekhare
-    last_estekhare = 0
+    es.end()
+
 
 def shitpost(message):
     File = GetPost(getSubbredit('shitposting'))

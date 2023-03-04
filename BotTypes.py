@@ -30,3 +30,12 @@ class Spy:
     def End(self):
         Spy.SpyList.remove(self)
 
+class estekhare:
+    estekhareList = []
+    def __init__(self, initmessage, sentPhoto):
+        self.ID = initmessage
+        self.photo = sentPhoto
+        estekhare.estekhareList.append(self)
+        
+    def end(self):
+        estekhare.estekhareList.remove(self)
