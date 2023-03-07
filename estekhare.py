@@ -45,4 +45,5 @@ def LoadDataFromSite():
     with open("estekharelist.json", "w") as file:
         file.write(json.dumps(List))
 
-GetEstekhare()
+if __name__ == "__main__":
+    LoadDataFromSite()
