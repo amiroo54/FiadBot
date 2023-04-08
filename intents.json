@@ -34,5 +34,9 @@
      {"tag":"spystart", 
      "patterns":["شروع"],
      "responses":["spystart"],
+     "context_set":""},
+     {"tag":"goodnight", 
+     "patterns":["شب بخیر", "شب خوش"],
+     "responses":["goodnight"],
      "context_set":""}
 ]}

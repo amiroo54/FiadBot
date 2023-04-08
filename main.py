@@ -13,12 +13,14 @@ from httpcore import SyncHTTPProxy
 import BotTypes
 from telebot import types
 import openai
-import discord
+import praw.exceptions
+import time
+#import discord
 #endregion
 #region Setup
 load_dotenv()
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
-
+#DISCORD_TOKEN = os.environ.get("DISCORD_TOKEN")
 httpcoreProxy = SyncHTTPProxy((b'http', b'127.0.0.1', 34229, b''))
 proxy = {'http':'http://127.0.0.1:34229', 'https':'http://127.0.0.1:34229'}
 apihelper.proxy = proxy
@@ -26,36 +28,44 @@ apihelper.proxy = proxy
 translatorProxy = {'http': httpcoreProxy, 'https':httpcoreProxy}
 translator = googletrans.Translator(proxies=translatorProxy)  
 
-
+#DBot = discord.Client(intents=discord.Intents.default())
 FBot = telebot.TeleBot(BOT_TOKEN)
 
 openai.api_key = os.environ.get("OPENAI_TOKEN")
+
+HasGoodNighted = False
 #endregion
 
 @FBot.message_handler(commands=["start"])
 def Start(message):
-    SendPrivateMessage("با موفقیت استارت شد.", message.chat.id, 1)
+    SendPrivateMessage("با موفقیت استارت شد.", message.chat, 1)
 
-@FBot.message_handler(chat_types=["private"])
-def Chatgpt(message):
-    ModelEngine = "text-davinci-003"
-    promp = message.text
-    GPTanswer = openai.Completion.create(
-        engine=ModelEngine,
-        prompt = promp, 
-        max_tokens=1024, 
-        n=1, 
-        stop = None,
-        temperature = 0.5
-    )
-    SendPrivateMessage(GPTanswer.choices[0].text, message.from_user, 1)
-#region Main Message Handler
+@FBot.message_handler(commands=["reddit"])
+def Reddit(message):
+    text = message.text.replace("/reddit", "").replace("@FiardBot", "").replace(" ", '')
+    try:
+        File = GetPost(getSubbredit(text))
+        SendImageMessage(File, message, 1)
+    except praw.exceptions.InvalidURL as e:
+        SendTextMessage("وجود ندارد.", message, 1)
+        
+
+
+#region Main Telegram Message Handler
 @FBot.message_handler(func = lambda message : True)
 def Answer(message):
+    global HasGoodNighted
     #chatbotchecks
-    answer = ChatBot.GiveRsponse(message.text)
-    if message.from_user.username == "NowThatRickyIsDead":
+    if (time.localtime().tm_hour > 21 or time.localtime().tm_hour < 4) and not HasGoodNighted:
+        SendGoodNight(1)
+        HasGoodNighted = True
+    answer = ChatBot.GiveResponse(message.text)
+    if message.from_user.username == "Aaaaa20202":
         FBot.ban_chat_member(message.chat.id, message.from_user.id)
+    if message.from_user.username == "melik_jfs":
+        mess = FBot.reply_to(message, "در حال ترجمه...")
+        ShitranslateStarter(mess, 1)
+        return
     match answer:
         case "meme":
             meme(message, 1)
@@ -82,6 +92,12 @@ def Answer(message):
         case "shitranslate":
             ShitranslateStarter(message, 1)
             return
+    if message.chat.type == "private":
+        if answer == "goodnight":
+                import GoodNighter
+                GoodNighter.SavePerson(message.from_user.id)
+                return
+        Chatgpt(message, 1)
     #messagereplycheck
     if message.reply_to_message != None:
         #spy
@@ -93,11 +109,44 @@ def Answer(message):
             if message.reply_to_message.id == estekhare.photo.id and message.from_user.id == estekhare.ID.from_user.id:
                 print("started")
                 SendEstekhare(message, estekhare, 1)
-                
-        
+    
+    if answer == "goodnight":
+        SendTextMessage(random.choice(("شو بخیر.", "شب خوش.", "شو خوش.", "شب بخیر.")), message, 1)      
+        return      
+    
     if answer != None and message.reply_to_message == None: 
         FBot.reply_to(message, answer)
 #endregion
+
+"""@DBot.event
+async def on_message(message):
+    answer = ChatBot.GiveRsponse(message.content)
+    match answer:
+        case "meme":
+            meme(message, 2)
+            return
+        case "estekhare":
+            StartEstekhare(message, 2)
+            return
+        case "shitpost":
+            shitpost(message, 2)
+            return
+        case "wikipedia":
+            wikipediaRandom(message, 2)
+            return
+        case "spy":
+            if not message.author == DBot.user:
+                SpyInit(message, 2)
+            return
+        case "spystart":
+            SpyStart(message, 2)
+            return
+        case "translate":
+            Translate(message, 2)
+            return
+        case "shitranslate":
+            ShitranslateStarter(message, 2)
+            return"""
 
 #region Functions
 def Translate(message, Type):
@@ -119,7 +168,7 @@ def ShitranslateStarter(message, Type):
     else:
         text = translator.translate(empty_text, dest = 'fa').text
         SentMessage = SendTextMessage(text, message, Type)
-    Shitranslate(SentMessage, message)
+    Shitranslate(SentMessage, message, Type)
     
 
 def Shitranslate(message, Premessage, Type):
@@ -131,7 +180,7 @@ def Shitranslate(message, Premessage, Type):
         text = translator.translate(empty_text, dest = 'fa').text
         SentMessage = SendTextMessage(text, message, Type)
     if empty_text != Premessage.reply_to_message.text:
-        Shitranslate(SentMessage, message)
+        Shitranslate(SentMessage, message, Type)
     else:
         return
 
@@ -161,11 +210,11 @@ def wikipediaRandom(message, Type):
         text=wikipedia.summary(wikipedia.random())
         SendTextMessage(text, message, Type)
     else:
+        text=wikipedia.summary(wikipedia.search(emptyText)[0])
         try:
-            text=wikipedia.summary(wikipedia.search(emptyText)[0])
             SendTextMessage(text, message, Type)
         except: 
-            SendTextMessage(text, message, "موضوع مورد درخواست شما یافت نشد.")
+            SendTextMessage("موضوع مورد درخواست شما یافت نشد.", message, Type)
             
 def SpyInit(message, Type):
     Sentmessage = SendTextMessage("برای اضافه شدن به بازی روی این پیام ریپلای بزنید.\n \n \n \n \n (برای زیاد شدن طول پیام و جلب توجه.)", message, Type)
@@ -185,6 +234,19 @@ def SpyStart(message, Type):
                 except apihelper.ApiTelegramException as e:
                     if e.description == "Forbidden: bot can't initiate conversation with a user":
                         SendTextMessage(f"the player {player.username} has not started the bot, the game will start regardless.", message, Type)
+
+def Chatgpt(message, Type):
+    ModelEngine = "text-davinci-003"
+    promp = message.text
+    GPTanswer = openai.Completion.create(
+        engine=ModelEngine,
+        prompt = promp, 
+        max_tokens=1024, 
+        n=1, 
+        stop = None,
+        temperature = 0.5
+    )
+    SendPrivateMessage(GPTanswer.choices[0].text, message.from_user.id, Type)
 #endregion
 
 
@@ -194,17 +256,30 @@ def SendTextMessage(Text, ReplyToMessage, Type):
         case 1:
             return FBot.reply_to(ReplyToMessage, Text)
         case 2:
-            #discordBotSendMessage
-            x =1
+            return ReplyToMessage.channel.send(Text)
             
 def SendImageMessage(Image, ReplyToMessage, Type):
     match Type:
         case 1:
             return FBot.send_photo(ReplyToMessage.chat.id, Image, reply_to_message_id=ReplyToMessage.id)
+        case 2:
+            #return ReplyToMessage.channel.send(file=discord.File(Image))
+            x=2
             
 def SendPrivateMessage(Text, User, Type):
     match Type:
         case 1:
-            return FBot.send_message(User.id, Text)
-        
+            return FBot.send_message(User, Text)
+        case 2:
+            User.create_dm()
+            User.dm_channel.send(Text)
+
+def SendGoodNight(Type):
+    import GoodNighter
+    for user in GoodNighter.Users:
+        SendPrivateMessage(random.choice(("شو بخیر.", "شب خوش.", "شو خوش.", "شب بخیر.", "شبت بخیر.")), user, Type)
+
+
+
+#DBot.run(DISCORD_TOKEN)
 FBot.infinity_polling()
