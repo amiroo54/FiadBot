@@ -15,14 +15,15 @@ from telebot import types
 import openai
 import praw.exceptions
 import time
+import json
 #import discord
 #endregion
 #region Setup
 load_dotenv()
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 #DISCORD_TOKEN = os.environ.get("DISCORD_TOKEN")
-httpcoreProxy = SyncHTTPProxy((b'http', b'127.0.0.1', 34229, b''))
-proxy = {'http':'http://127.0.0.1:34229', 'https':'http://127.0.0.1:34229'}
+httpcoreProxy = SyncHTTPProxy((b'http', b'127.0.0.1', 39459, b''))
+proxy = {'http':'http://127.0.0.1:39459', 'https':'http://127.0.0.1:39459'}
 apihelper.proxy = proxy
 
 translatorProxy = {'http': httpcoreProxy, 'https':httpcoreProxy}
@@ -57,15 +58,14 @@ def Answer(message):
     global HasGoodNighted
     #chatbotchecks
     if (time.localtime().tm_hour > 21 or time.localtime().tm_hour < 4) and not HasGoodNighted:
-        SendGoodNight(1)
+        #SendGoodNight(1)
         HasGoodNighted = True
     answer = ChatBot.GiveResponse(message.text)
+    if answer != None: print(message.chat.title)
     if message.from_user.username == "Aaaaa20202":
         FBot.ban_chat_member(message.chat.id, message.from_user.id)
-    if message.from_user.username == "melik_jfs":
-        mess = FBot.reply_to(message, "در حال ترجمه...")
-        ShitranslateStarter(mess, 1)
-        return
+    if message.from_user.username in json.loads(open("Premiums.json", "r").read()) and message.reply_to_message != None:
+        SendTextMessage(ShitranslateOnce(message.text), message, 1)
     match answer:
         case "meme":
             meme(message, 1)
@@ -183,6 +183,13 @@ def Shitranslate(message, Premessage, Type):
         Shitranslate(SentMessage, message, Type)
     else:
         return
+    
+def ShitranslateOnce(message):
+    result = message
+    for i in range(1, 20):
+        result = translator.translate(result, random.choice(list(googletrans.LANGUAGES))).text
+    result = translator.translate(result, "fa").text
+    return result
 
 def meme(message, Type):
     File = GetPost(getSubbredit('memes'))
@@ -254,7 +261,10 @@ def Chatgpt(message, Type):
 def SendTextMessage(Text, ReplyToMessage, Type):
     match Type:
         case 1:
-            return FBot.reply_to(ReplyToMessage, Text)
+            if (Text):
+                return FBot.reply_to(ReplyToMessage, Text + ".")
+            else:
+                return FBot.reply_to(ReplyToMessage, Text)
         case 2:
             return ReplyToMessage.channel.send(Text)
             
@@ -274,11 +284,11 @@ def SendPrivateMessage(Text, User, Type):
             User.create_dm()
             User.dm_channel.send(Text)
 
-def SendGoodNight(Type):
+"""def SendGoodNight(Type):
     import GoodNighter
     for user in GoodNighter.Users:
         SendPrivateMessage(random.choice(("شو بخیر.", "شب خوش.", "شو خوش.", "شب بخیر.", "شبت بخیر.")), user, Type)
-
+"""
 
 
 #DBot.run(DISCORD_TOKEN)
