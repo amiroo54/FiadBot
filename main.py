@@ -64,8 +64,6 @@ def Answer(message):
     if answer != None: print(message.chat.title)
     if message.from_user.username == "Aaaaa20202":
         FBot.ban_chat_member(message.chat.id, message.from_user.id)
-    if message.from_user.username in json.loads(open("Premiums.json", "r").read()) and message.reply_to_message != None:
-        SendTextMessage(ShitranslateOnce(message.text), message, 1)
     match answer:
         case "meme":
             meme(message, 1)
@@ -90,7 +88,10 @@ def Answer(message):
             Translate(message, 1)
             return
         case "shitranslate":
-            ShitranslateStarter(message, 1)
+            ShitranslateOnce(message)
+            return
+        case "google":
+            GooglAuto(message)
             return
     if message.chat.type == "private":
         if answer == "goodnight":
@@ -254,17 +255,28 @@ def Chatgpt(message, Type):
         temperature = 0.5
     )
     SendPrivateMessage(GPTanswer.choices[0].text, message.from_user.id, Type)
+    
+def GooglAuto(message):
+    text = message.reply_to_message.text
+    headers = {
+    "User-Agent":
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"
+    }
+    result = ""
+    response = requests.get(f'http://google.com/complete/search?client=chrome&q={text}', headers=headers)
+    for item in json.loads(response.text)[1]:
+        result += item + "\n"
+    SendTextMessage(result, message, 1)
 #endregion
-
 
 
 def SendTextMessage(Text, ReplyToMessage, Type):
     match Type:
         case 1:
-            if (Text):
-                return FBot.reply_to(ReplyToMessage, Text + ".")
-            else:
+            if (Text[-1] == "." or Text[-1] == "?"):
                 return FBot.reply_to(ReplyToMessage, Text)
+            else:
+                return FBot.reply_to(ReplyToMessage, Text + ".")
         case 2:
             return ReplyToMessage.channel.send(Text)
             

@@ -38,5 +38,9 @@
      {"tag":"goodnight", 
      "patterns":["شب بخیر", "شب خوش"],
      "responses":["goodnight"],
+     "context_set":""},
+     {"tag":"google", 
+     "patterns":["گوگل"],
+     "responses":["google"],
      "context_set":""}
 ]}
