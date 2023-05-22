@@ -21,13 +21,10 @@ import json
 #region Setup
 load_dotenv()
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
+filepath = os.path.dirname(os.path.realpath(__file__)) + "/"
 #DISCORD_TOKEN = os.environ.get("DISCORD_TOKEN")
-httpcoreProxy = SyncHTTPProxy((b'http', b'127.0.0.1', 39459, b''))
-proxy = {'http':'http://127.0.0.1:39459', 'https':'http://127.0.0.1:39459'}
-apihelper.proxy = proxy
 
-translatorProxy = {'http': httpcoreProxy, 'https':httpcoreProxy}
-translator = googletrans.Translator(proxies=translatorProxy)  
+translator = googletrans.Translator()  
 
 #DBot = discord.Client(intents=discord.Intents.default())
 FBot = telebot.TeleBot(BOT_TOKEN)
@@ -197,7 +194,7 @@ def meme(message, Type):
     SendImageMessage(File, message, Type)
 
 def StartEstekhare(message, Type):
-    BotTypes.estekhare(message, SendImageMessage(open("estekhareimage.jpg", "rb"), message, Type))
+    BotTypes.estekhare(message, SendImageMessage(open(filepath + "estekhareimage.jpg", "rb"), message, Type))
     
 
 def SendEstekhare(message, es, Type):
@@ -243,19 +240,7 @@ def SpyStart(message, Type):
                     if e.description == "Forbidden: bot can't initiate conversation with a user":
                         SendTextMessage(f"the player {player.username} has not started the bot, the game will start regardless.", message, Type)
 
-def Chatgpt(message, Type):
-    ModelEngine = "text-davinci-003"
-    promp = message.text
-    GPTanswer = openai.Completion.create(
-        engine=ModelEngine,
-        prompt = promp, 
-        max_tokens=1024, 
-        n=1, 
-        stop = None,
-        temperature = 0.5
-    )
-    SendPrivateMessage(GPTanswer.choices[0].text, message.from_user.id, Type)
-    
+
 def GooglAuto(message):
     text = message.reply_to_message.text
     headers = {
