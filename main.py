@@ -177,7 +177,7 @@ def Shitranslate(message, Premessage, Type):
         return
     
 def ShitranslateOnce(message):
-    result = message
+    result = message.text
     for i in range(1, 5):
         result = translator.translate(result, random.choice(list(googletrans.LANGUAGES))).text
     result = translator.translate(result, "fa").text
