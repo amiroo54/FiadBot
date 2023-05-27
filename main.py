@@ -12,7 +12,6 @@ import ChatBot
 from httpcore import SyncHTTPProxy
 import BotTypes
 from telebot import types
-import openai
 import praw.exceptions
 import time
 import json
@@ -22,17 +21,10 @@ import json
 load_dotenv()
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 #DISCORD_TOKEN = os.environ.get("DISCORD_TOKEN")
-httpcoreProxy = SyncHTTPProxy((b'http', b'127.0.0.1', 39459, b''))
-proxy = {'http':'http://127.0.0.1:39459', 'https':'http://127.0.0.1:39459'}
-apihelper.proxy = proxy
-
-translatorProxy = {'http': httpcoreProxy, 'https':httpcoreProxy}
-translator = googletrans.Translator(proxies=translatorProxy)  
+translator = googletrans.Translator()  
 
 #DBot = discord.Client(intents=discord.Intents.default())
 FBot = telebot.TeleBot(BOT_TOKEN)
-
-openai.api_key = os.environ.get("OPENAI_TOKEN")
 
 HasGoodNighted = False
 #endregion
@@ -98,7 +90,6 @@ def Answer(message):
                 import GoodNighter
                 GoodNighter.SavePerson(message.from_user.id)
                 return
-        Chatgpt(message, 1)
     #messagereplycheck
     if message.reply_to_message != None:
         #spy
@@ -243,19 +234,6 @@ def SpyStart(message, Type):
                     if e.description == "Forbidden: bot can't initiate conversation with a user":
                         SendTextMessage(f"the player {player.username} has not started the bot, the game will start regardless.", message, Type)
 
-def Chatgpt(message, Type):
-    ModelEngine = "text-davinci-003"
-    promp = message.text
-    GPTanswer = openai.Completion.create(
-        engine=ModelEngine,
-        prompt = promp, 
-        max_tokens=1024, 
-        n=1, 
-        stop = None,
-        temperature = 0.5
-    )
-    SendPrivateMessage(GPTanswer.choices[0].text, message.from_user.id, Type)
-    
 def GooglAuto(message):
     text = message.reply_to_message.text
     headers = {
