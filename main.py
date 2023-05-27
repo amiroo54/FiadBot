@@ -181,7 +181,7 @@ def ShitranslateOnce(message):
     for i in range(1, 20):
         result = translator.translate(result, random.choice(list(googletrans.LANGUAGES))).text
     result = translator.translate(result, "fa").text
-    SendTextMessage(result)
+    SendTextMessage(result, message, 1)
 
 def meme(message, Type):
     File = GetPost(getSubbredit('memes'))
