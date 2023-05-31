@@ -1,7 +1,9 @@
 import json
 import random
 import hazm
-with open("intents.json", "r", encoding='utf-8') as file:
+import os
+FilePath = os.path.dirname(os.path.realpath(__file__))
+with open(FilePath + "intents.json", "r", encoding='utf-8') as file:
     data = json.load(file)
 norm = hazm.Normalizer()
 stem = hazm.Stemmer()

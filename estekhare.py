@@ -3,6 +3,8 @@ import random
 from bs4 import BeautifulSoup 
 import json
 import urllib.request
+import os
+FilePath = os.path.dirname(os.path.realpath(__file__))
 def GetEstekhareOnline():
     Rurl = random.randint(1, 604/2)
     url = f"https://www.aviny.com/%D8%A7%D8%B3%D8%AA%D8%AE%D8%A7%D8%B1%D9%87/{Rurl*2-1}"
@@ -18,7 +20,7 @@ def GetEstekhareOnline():
     return output
 
 def GetEstekhareOffline():
-    with open("estekharelist.json", "r") as file:
+    with open(FilePath + "estekharelist.json", "r") as file:
         List = json.loads(file.read())
         return random.choice(List)
 
@@ -42,7 +44,7 @@ def LoadDataFromSite():
         output += soup.find('div', {'class':'field field--name-field-natije-ezdevaj field--type-string-long field--label-inline clearfix'}).text 
         output += soup.find('div', {'class':'field field--name-field-natije-moamele field--type-string-long field--label-inline clearfix'}).text 
         List.append(output)
-    with open("estekharelist.json", "w") as file:
+    with open(FilePath + "estekharelist.json", "w") as file:
         file.write(json.dumps(List))
 
 if __name__ == "__main__":

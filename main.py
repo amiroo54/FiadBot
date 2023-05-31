@@ -23,6 +23,7 @@ BOT_TOKEN = os.environ.get("BOT_TOKEN")
 #DISCORD_TOKEN = os.environ.get("DISCORD_TOKEN")
 translator = googletrans.Translator()  
 
+FilePath = os.path.dirname(os.path.realpath(__file__))
 #DBot = discord.Client(intents=discord.Intents.default())
 FBot = telebot.TeleBot(BOT_TOKEN)
 
