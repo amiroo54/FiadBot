@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 import json
 import urllib.request
 import os
-FilePath = os.path.dirname(os.path.realpath(__file__))
+FilePath = os.path.dirname(os.path.realpath(__file__)) + "/"
 def GetEstekhareOnline():
     Rurl = random.randint(1, 604/2)
     url = f"https://www.aviny.com/%D8%A7%D8%B3%D8%AA%D8%AE%D8%A7%D8%B1%D9%87/{Rurl*2-1}"

@@ -2,7 +2,7 @@ import json
 import random
 import hazm
 import os
-FilePath = os.path.dirname(os.path.realpath(__file__))
+FilePath = os.path.dirname(os.path.realpath(__file__)) + "/"
 with open(FilePath + "intents.json", "r", encoding='utf-8') as file:
     data = json.load(file)
 norm = hazm.Normalizer()

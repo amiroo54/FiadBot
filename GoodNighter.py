@@ -1,6 +1,6 @@
 import json
 import os
-FilePath = os.path.dirname(os.path.realpath(__file__))
+FilePath = os.path.dirname(os.path.realpath(__file__)) + "/"
 
 Users = []
 """with open("GoodNight.json", "w") as file:
