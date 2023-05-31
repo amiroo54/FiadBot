@@ -189,7 +189,7 @@ def meme(message, Type):
     SendImageMessage(File, message, Type)
 
 def StartEstekhare(message, Type):
-    BotTypes.estekhare(message, SendImageMessage(open("estekhareimage.jpg", "rb"), message, Type))
+    BotTypes.estekhare(message, SendImageMessage(open(FilePath + "estekhareimage.jpg", "rb"), message, Type))
     
 
 def SendEstekhare(message, es, Type):
