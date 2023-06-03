@@ -1,6 +1,8 @@
 import random
 import wikipedia
 import json
+import os
+FilePath = os.path.dirname(os.path.realpath(__file__)) + "/"
 
 class Spy:
     SpyList = []
@@ -15,7 +17,7 @@ class Spy:
             wikipedia.set_lang("fa")
             self.word = wikipedia.random()
         if Difficulty == 2:
-            with open("SpyWord.json") as file:  
+            with open(FilePath + "SpyWord.json") as file:  
                 wordList = json.load(file)
                 self.word = random.choice(wordList["words"])
     
