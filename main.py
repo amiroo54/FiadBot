@@ -56,7 +56,7 @@ def Answer(message):
     answer = ChatBot.GiveResponse(message.text)
     if answer != None: print(message.chat.title)
     if message.from_user.username == "systemof_adown":
-        SendTextMessage("شما صحبت می کنی من تا حالا چیزی بهت گفتم؟", message, 1)
+        SendTextMessage("کون برزیلی", message, 1)
         return
     if message.from_user.username == "Aaaaa20202":
         FBot.ban_chat_member(message.chat.id, message.from_user.id)
